@@ -1,0 +1,23 @@
+body {
+  font-family: "Helvetica Neue", Helvetica, Microsoft Yahei, Hiragino Sans GB, WenQuanYi Micro Hei, sans-serif;
+}
+
+#header {
+  margin-bottom: 10px;
+}
+
+#logo {
+  padding-top: 2px;
+}
+
+.text-indent > p {
+  text-indent: 2em;
+}
+
+#functions {
+  margin: 0.5em 0;
+}
+
+.play_mode > p {
+  margin-left: 1em;
+}

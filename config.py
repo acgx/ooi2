@@ -12,3 +12,10 @@ debug = bool(os.environ.get('OOI_DEBUG', False))
 # Proxy settings
 proxy_host = os.environ.get('OOI_AUTH_PROXY_HOST', None)
 proxy_port = int(os.environ.get('OOI_AUTH_PROXY_PORT')) if os.environ.get('OOI_AUTH_PROXY_PORT') else None
+
+# Customized settings
+customize_dir = os.path.join(base_dir, 'customize')
+
+# kcs
+kcs_domain = os.environ.get('OOI_KCS_DOMAIN', None)
+kcs_https_domain = os.environ.get('OOI_KCS_HTTPS_DOMAIN', None)

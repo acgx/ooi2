@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}OOI - 舰娘在线缓存系统{% end %}
+
+{% block content %}
+  <div class="col-md-5">
+    {% if error %}<div class="alert alert-danger"><p>{{ message }}</p></div>{% end %}
+    <form  method="post">
+      <div class="form-group">
+        <label for="login_id" class="control-label">DMM登录ID<span class="asteriskField">*</span></label>
+        <div class="controls "><input class="emailinput form-control" id="login_id" maxlength="30" name="login_id" type="email"></div>
+      </div>
+      <div class="form-group">
+        <label for="password" class="control-label">DMM登录密码<span class="asteriskField">*</span></label>
+        <div class="controls "><input class="textinput textInput form-control" id="password" maxlength="30" name="password" type="password"></div>
+      </div>
+      <div class="radio">
+        <p><strong>游戏方式：</strong></p>
+        <div class="play_mode">
+          <p><label for="play_mode1" class="radio-inline"><input type="radio" id="play_mode1" name="play_mode" value="1"{% if play_mode == 1 %} checked{% end %}>在浏览器中运行</label></p>
+          <p><label for="play_mode2" class="radio-inline"><input type="radio" id="play_mode2" name="play_mode" value="2"{% if play_mode == 2 %} checked{% end %}>在KCV或74EO中运行</label></p>
+          <p><label for="play_mode3" class="radio-inline"><input type="radio" id="play_mode3" name="play_mode" value="3"{% if play_mode == 3 %} checked{% end %}>在poi中运行</label></p>
+        </div>
+      </div>
+      <div class="form-actions"><input type="submit" name="submit" value="登录游戏" class="btn btn-primary" id="submit-id-submit"></div>
+    </form>
+  </div>
+  <div class="col-md-7">
+    <h4 class="text-primary"><strong>提示</strong></h4>
+    <div  class="text-indent">
+      <p>本站采用了OOI系统，OOI (Online Objects Integration)是针对DMM网页游戏《艦隊これくしょん -艦これ-》的在线缓存系统。目前已完成的功能与“舰队司令部”类似。</p>
+      <p>本系统只支持DMM账号登录，不支持Facebook和Google账号登录。本网站不会保存任何用户信息，并对本网站服务可能造成的任何后果不负责任。</p>
+      <p>本项目采用GPLv2许可证开源，发布于<a href="https://github.com/kitakamiooi/ooi2" target="_blank"> 此版本库 </a>。</p>
+      {% module Customize('info') %}
+    </div>
+  </div>
+{% end %}
