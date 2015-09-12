@@ -21,8 +21,6 @@ class ApiHandler(RequestHandler):
                 'Referer': referer,
                 'X-Requested-With': 'ShockwaveFlash/18.0.0.232'
             }
-            print(url)
-            print(headers)
             http_client = AsyncHTTPClient()
             response = yield http_client.fetch(url, method='POST', headers=headers, body=self.request.body,
                                                connect_timeout=60, request_timeout=120,

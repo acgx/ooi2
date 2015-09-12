@@ -2,9 +2,9 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 from tornado.options import define, options
-from ooi.handlers import MainHandler, NormalGameHandler, iFrameGameHandler, iFrameFlashHandler, PoiGameHandler
+from ooi.handlers import MainHandler, NormalGameHandler, iFrameGameHandler, iFrameFlashHandler, \
+    PoiGameHandler, ReloginHandler
 from api.handlers import ApiHandler, MainSwfHandler, WorldImageHandler
-from auth.handlers import OsapiHandler, AuthHandler
 from config import template_path, static_path, cookie_secret, debug
 from ui import modules
 
@@ -17,8 +17,7 @@ application = tornado.web.Application(
               (r'/kcsapi/(.*)', ApiHandler),
               ('/kcs/mainD2.swf', MainSwfHandler),
               (r'/kcs/resources/image/world/.*(l|s)\.png', WorldImageHandler),
-              ('/osapi', OsapiHandler),
-              ('/auth', AuthHandler), ],
+              ('/relogin', ReloginHandler), ],
     template_path=template_path,
     static_path=static_path,
     cookie_secret=cookie_secret,

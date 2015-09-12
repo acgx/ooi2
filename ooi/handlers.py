@@ -106,3 +106,9 @@ class PoiGameHandler(RequestHandler):
         else:
             self.clear_all_cookies()
             self.redirect('/')
+
+
+class ReloginHandler(RequestHandler):
+    def get(self):
+        self.clear_all_cookies()
+        self.redirect('/')
