@@ -1,7 +1,9 @@
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
+from tornado.options import define, options
 from ooi.handlers import MainHandler, NormalGameHandler, iFrameGameHandler, iFrameFlashHandler, PoiGameHandler
+from api.handlers import ApiHandler, MainSwfHandler, WorldImageHandler
 from auth.handlers import OsapiHandler, AuthHandler
 from config import template_path, static_path, cookie_secret, debug
 from ui import modules
@@ -12,6 +14,9 @@ application = tornado.web.Application(
               ('/iframe', iFrameGameHandler),
               ('/flash', iFrameFlashHandler),
               ('/poi', PoiGameHandler),
+              (r'/kcsapi/(.*)', ApiHandler),
+              ('/kcs/mainD2.swf', MainSwfHandler),
+              (r'/kcs/resources/image/world/.*(l|s)\.png', WorldImageHandler),
               ('/osapi', OsapiHandler),
               ('/auth', AuthHandler), ],
     template_path=template_path,
@@ -21,6 +26,8 @@ application = tornado.web.Application(
     debug=debug
 )
 
+define('port', type=int, default=8000)
+
 if __name__ == "__main__":
-    application.listen(80)
+    application.listen(options.port)
     tornado.ioloop.IOLoop.current().start()
