@@ -56,7 +56,7 @@ class NormalGameHandler(RequestHandler):
                         world_ip=world_ip)
         else:
             self.clear_all_cookies()
-            self.send_error(403)
+            self.redirect('/')
 
 
 class iFrameGameHandler(RequestHandler):
@@ -69,7 +69,7 @@ class iFrameGameHandler(RequestHandler):
             self.render('iframe_game.html')
         else:
             self.clear_all_cookies()
-            self.send_error(403)
+            self.redirect('/')
 
 
 class iFrameFlashHandler(RequestHandler):
@@ -105,4 +105,4 @@ class PoiGameHandler(RequestHandler):
                         world_ip=world_ip)
         else:
             self.clear_all_cookies()
-            self.send_error(403)
+            self.redirect('/')
