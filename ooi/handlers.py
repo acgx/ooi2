@@ -26,9 +26,9 @@ class MainHandler(RequestHandler):
                 self.set_secure_cookie('token', token, expires_days=None)
                 self.set_secure_cookie('starttime', starttime, expires_days=None)
                 self.set_secure_cookie('play_mode', str(play_mode), expires=time.time()+86400)
-                if play_mode == '2':
+                if play_mode == 2:
                     self.redirect('/iframe')
-                elif play_mode == '3':
+                elif play_mode == 3:
                     self.redirect('/poi')
                 else:
                     self.redirect('/kancolle')
