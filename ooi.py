@@ -28,6 +28,7 @@ if __name__ == "__main__":
         static_path=static_path,
         cookie_secret=cookie_secret,
         ui_modules=modules,
+        compress_response=True,
         debug=options.debug
     )
 
