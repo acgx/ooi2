@@ -8,7 +8,7 @@ cookie_secret = os.environ.get('OOI_SECRET', 'DEFAULT COOKIE SECRET FOR DEVELOPI
 
 # Proxy settings
 proxy_host = os.environ.get('OOI_PROXY_HOST', None)
-proxy_port = int(os.environ.get('OOI_PROXY_PORT')) if os.environ.get('OOI_AUTH_PROXY_PORT') else None
+proxy_port = int(os.environ.get('OOI_PROXY_PORT')) if os.environ.get('OOI_PROXY_PORT') else None
 
 # Customized settings
 customize_dir = os.path.join(base_dir, 'customize')
