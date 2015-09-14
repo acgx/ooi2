@@ -112,3 +112,8 @@ class ReloginHandler(RequestHandler):
     def get(self):
         self.clear_all_cookies()
         self.redirect('/')
+
+
+class MaintainHandler(RequestHandler):
+    def get(self):
+        self.render('maintain.html')
