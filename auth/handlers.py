@@ -24,7 +24,7 @@ class OsapiHandler(RequestHandler):
             self.send_error(400)
 
 
-class AuthHandler(RequestHandler):
+class TokenHandler(RequestHandler):
     @coroutine
     def post(self):
         login_id = self.get_argument('login_id')
@@ -34,7 +34,6 @@ class AuthHandler(RequestHandler):
             try:
                 flash_url, world_ip, token, starttime, owner = yield auth.get_flash()
                 result = {'status': 1,
-                          'flash_url': flash_url,
                           'world_ip': world_ip,
                           'token': token,
                           'starttime': starttime,
