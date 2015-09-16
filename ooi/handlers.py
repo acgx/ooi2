@@ -5,8 +5,11 @@ from tornado.web import RequestHandler
 
 from auth.kancolle import KanColleAuth
 from auth.exceptions import OoiAuthError
+from session.session import OoiSession
 from utils.convert import to_int, to_str
 from config import kcs_domain, kcs_https_domain
+
+Session = OoiSession()
 
 
 class MainHandler(RequestHandler):
@@ -24,10 +27,10 @@ class MainHandler(RequestHandler):
             try:
                 flash_url, world_ip, token, starttime, owner = yield auth.get_flash()
                 self.set_secure_cookie('owner', owner, expires_days=None)
-                self.set_secure_cookie('world_ip', world_ip, expires_days=None)
                 self.set_secure_cookie('token', token, expires_days=None)
                 self.set_secure_cookie('starttime', starttime, expires_days=None)
                 self.set_secure_cookie('play_mode', str(play_mode), expires=time.time()+86400)
+                Session.create_user(owner, token, starttime, world_ip)
                 if play_mode == 2:
                     self.redirect('/iframe')
                 elif play_mode == 3:
@@ -46,68 +49,69 @@ class MainHandler(RequestHandler):
 class NormalGameHandler(RequestHandler):
     def get(self):
         owner = to_str(self.get_secure_cookie('owner'))
-        world_ip = to_str(self.get_secure_cookie('world_ip'))
         token = to_str(self.get_secure_cookie('token'))
         starttime = to_str(self.get_secure_cookie('starttime'))
-        if owner and world_ip and token and starttime:
-            scheme = self.request.headers.get('X-Scheme', 'http')
-            host = kcs_domain if kcs_domain else self.request.headers.get('Host')
-            if scheme == 'https' and kcs_https_domain:
-                host = kcs_https_domain
-            self.render('normal_game.html', scheme=scheme, host=host, token=token, starttime=starttime,
-                        world_ip=world_ip)
-        else:
-            self.clear_all_cookies()
-            self.redirect('/')
+        if owner and token and starttime:
+            user = Session.get_user(owner, token, starttime)
+            if user:
+                scheme = self.request.headers.get('X-Scheme', 'http')
+                host = kcs_domain if kcs_domain else self.request.headers.get('Host')
+                if scheme == 'https' and kcs_https_domain:
+                    host = kcs_https_domain
+                self.render('normal_game.html', scheme=scheme, host=host, token=token, starttime=starttime, owner=owner)
+                return
+        self.clear_all_cookies()
+        self.redirect('/')
 
 
 class IFrameGameHandler(RequestHandler):
     def get(self):
         owner = to_str(self.get_secure_cookie('owner'))
-        world_ip = to_str(self.get_secure_cookie('world_ip'))
         token = to_str(self.get_secure_cookie('token'))
         starttime = to_str(self.get_secure_cookie('starttime'))
-        if owner and world_ip and token and starttime:
-            self.render('iframe_game.html')
-        else:
-            self.clear_all_cookies()
-            self.redirect('/')
+        if owner and token and starttime:
+            user = Session.get_user(owner, token, starttime)
+            if user:
+                self.render('iframe_game.html')
+                return
+        self.clear_all_cookies()
+        self.redirect('/')
 
 
 class IFrameFlashHandler(RequestHandler):
     def get(self):
         owner = to_str(self.get_secure_cookie('owner'))
-        world_ip = to_str(self.get_secure_cookie('world_ip'))
         token = to_str(self.get_secure_cookie('token'))
         starttime = to_str(self.get_secure_cookie('starttime'))
-        if owner and world_ip and token and starttime:
-            scheme = self.request.headers.get('X-Scheme', 'http')
-            host = kcs_domain if kcs_domain else self.request.headers.get('Host')
-            if scheme == 'https' and kcs_https_domain:
-                host = kcs_https_domain
-            self.render('flash.html', scheme=scheme, host=host, token=token, starttime=starttime,
-                        world_ip=world_ip)
-        else:
-            self.clear_all_cookies()
-            self.send_error(403)
+        if owner and token and starttime:
+            user = Session.get_user(owner, token, starttime)
+            if user:
+                scheme = self.request.headers.get('X-Scheme', 'http')
+                host = kcs_domain if kcs_domain else self.request.headers.get('Host')
+                if scheme == 'https' and kcs_https_domain:
+                    host = kcs_https_domain
+                self.render('flash.html', scheme=scheme, host=host, token=token, starttime=starttime, owner=owner)
+                return
+        self.clear_all_cookies()
+        self.send_error(403)
 
 
 class PoiGameHandler(RequestHandler):
     def get(self):
         owner = to_str(self.get_secure_cookie('owner'))
-        world_ip = to_str(self.get_secure_cookie('world_ip'))
         token = to_str(self.get_secure_cookie('token'))
         starttime = to_str(self.get_secure_cookie('starttime'))
-        if owner and world_ip and token and starttime:
-            scheme = self.request.headers.get('X-Scheme', 'http')
-            host = kcs_domain if kcs_domain else self.request.headers.get('Host')
-            if scheme == 'https' and kcs_https_domain:
-                host = kcs_https_domain
-            self.render('poi_game.html', scheme=scheme, host=host, token=token, starttime=starttime,
-                        world_ip=world_ip)
-        else:
-            self.clear_all_cookies()
-            self.redirect('/')
+        if owner and token and starttime:
+            user = Session.get_user(owner, token, starttime)
+            if user:
+                scheme = self.request.headers.get('X-Scheme', 'http')
+                host = kcs_domain if kcs_domain else self.request.headers.get('Host')
+                if scheme == 'https' and kcs_https_domain:
+                    host = kcs_https_domain
+                self.render('poi.html', scheme=scheme, host=host, token=token, starttime=starttime, owner=owner)
+                return
+        self.clear_all_cookies()
+        self.redirect('/')
 
 
 class ReloginHandler(RequestHandler):
