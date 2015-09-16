@@ -1,8 +1,9 @@
 from tornado.gen import coroutine
 from tornado.escape import json_encode
 from tornado.web import RequestHandler
-from .kancolle import KanColleAuth
-from .exceptions import OoiAuthError
+
+from auth.kancolle import KanColleAuth
+from auth.exceptions import OoiAuthError
 
 
 class OsapiHandler(RequestHandler):

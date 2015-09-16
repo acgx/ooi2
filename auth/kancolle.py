@@ -9,8 +9,8 @@ from tornado.httpclient import HTTPError
 from utils.httpclient import AsyncHTTPClient
 
 from config import proxy_host, proxy_port
-from .exceptions import OoiAuthError
-from . import dmm
+from auth.exceptions import OoiAuthError
+from auth import dmm
 
 
 class KanColleAuth:

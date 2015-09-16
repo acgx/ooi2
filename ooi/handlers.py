@@ -1,6 +1,8 @@
 import time
+
 from tornado.gen import coroutine
 from tornado.web import RequestHandler
+
 from auth.kancolle import KanColleAuth
 from auth.exceptions import OoiAuthError
 from utils.convert import to_int, to_str
@@ -59,7 +61,7 @@ class NormalGameHandler(RequestHandler):
             self.redirect('/')
 
 
-class iFrameGameHandler(RequestHandler):
+class IFrameGameHandler(RequestHandler):
     def get(self):
         owner = to_str(self.get_secure_cookie('owner'))
         world_ip = to_str(self.get_secure_cookie('world_ip'))
@@ -72,7 +74,7 @@ class iFrameGameHandler(RequestHandler):
             self.redirect('/')
 
 
-class iFrameFlashHandler(RequestHandler):
+class IFrameFlashHandler(RequestHandler):
     def get(self):
         owner = to_str(self.get_secure_cookie('owner'))
         world_ip = to_str(self.get_secure_cookie('world_ip'))

@@ -2,7 +2,8 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.web
 from tornado.options import define, options, parse_command_line
-from ooi.handlers import MainHandler, NormalGameHandler, iFrameGameHandler, iFrameFlashHandler, \
+
+from ooi.handlers import MainHandler, NormalGameHandler, IFrameGameHandler, IFrameFlashHandler, \
     PoiGameHandler, ReloginHandler, MaintainHandler
 from api.handlers import ApiHandler, MainSwfHandler, WorldImageHandler
 from auth.handlers import OsapiHandler, TokenHandler
@@ -22,8 +23,8 @@ if __name__ == "__main__":
     else:
         handlers = [('/', MainHandler),
                     ('/kancolle', NormalGameHandler),
-                    ('/iframe', iFrameGameHandler),
-                    ('/flash', iFrameFlashHandler),
+                    ('/iframe', IFrameGameHandler),
+                    ('/flash', IFrameFlashHandler),
                     ('/poi', PoiGameHandler),
                     (r'/kcsapi/(.*)', ApiHandler),
                     ('/kcs/mainD2.swf', MainSwfHandler),
