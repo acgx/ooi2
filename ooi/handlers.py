@@ -108,7 +108,7 @@ class PoiGameHandler(RequestHandler):
                 host = kcs_domain if kcs_domain else self.request.headers.get('Host')
                 if scheme == 'https' and kcs_https_domain:
                     host = kcs_https_domain
-                self.render('poi.html', scheme=scheme, host=host, token=token, starttime=starttime, owner=owner)
+                self.render('poi_game.html', scheme=scheme, host=host, token=token, starttime=starttime, owner=owner)
                 return
         self.clear_all_cookies()
         self.redirect('/')
