@@ -22,3 +22,6 @@ customize_dir = os.path.join(base_dir, 'customize')
 # kcs
 kcs_domain = os.environ.get('OOI_KCS_DOMAIN', None)
 kcs_https_domain = os.environ.get('OOI_KCS_HTTPS_DOMAIN', None)
+
+# result of api_start2
+api_start2_path = '/srv/_kcs/api_start2.json'
