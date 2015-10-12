@@ -19,9 +19,7 @@ class ApiHandler(RequestHandler):
         if world_ip:
             if action == 'api_start2' and os.path.exists(api_start2_path):
                 self.set_header('Content-Type', 'text/plain')
-                f = open(api_start2_path, 'rb')
-                self.write(f.read())
-                f.close()
+                self.set_header('X-Accel-Redirect', '/_kcs/api_start2.json')
             else:
                 referer = self.request.headers.get('Referer')
                 referer = referer.replace(self.request.headers.get('Host'), world_ip)
