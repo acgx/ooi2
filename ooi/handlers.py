@@ -44,11 +44,11 @@ class MainHandler(RequestHandler):
                 else:
                     self.redirect('/kancolle')
             except OoiAuthError as e:
-                self.render('login_form.html', error=True, play_mode=play_mode,
+                self.render('login_form.html', error=True, play_mode=play_mode, cdn=cdn, cdn_domains=cdn_domains,
                             message=e.message)
 
         else:
-            self.render('login_form.html', error=True, play_mode=play_mode,
+            self.render('login_form.html', error=True, play_mode=play_mode, cdn=cdn, cdn_domains=cdn_domains,
                         message='请输入完整的登录ID和密码')
 
 
