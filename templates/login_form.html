@@ -14,13 +14,30 @@
         <label for="password" class="control-label">DMM登录密码<span class="asteriskField">*</span></label>
         <div class="controls "><input class="textinput textInput form-control" id="password" maxlength="30" name="password" type="password"></div>
       </div>
-      <div class="radio">
-        <p><strong>游戏方式：</strong></p>
-        <div class="play_mode">
-          <p><label for="play_mode1" class="radio-inline"><input type="radio" id="play_mode1" name="play_mode" value="1"{% if play_mode == 1 %} checked{% end %}>在浏览器中运行</label></p>
-          <p><label for="play_mode2" class="radio-inline"><input type="radio" id="play_mode2" name="play_mode" value="2"{% if play_mode == 2 %} checked{% end %}>在KCV或74EO中运行</label></p>
-          <p><label for="play_mode3" class="radio-inline"><input type="radio" id="play_mode3" name="play_mode" value="3"{% if play_mode == 3 %} checked{% end %}>在poi中运行</label></p>
+      <div class="row">
+        <div class="col-lg-6">
+          <div class="radio">
+            <p><strong>游戏方式：</strong></p>
+            <div class="login_select">
+              <p><label for="play_mode1" class="radio-inline"><input type="radio" id="play_mode1" name="play_mode" value="1"{% if play_mode == 1 %} checked{% end %}>在浏览器中运行</label></p>
+              <p><label for="play_mode2" class="radio-inline"><input type="radio" id="play_mode2" name="play_mode" value="2"{% if play_mode == 2 %} checked{% end %}>在KCV或74EO中运行</label></p>
+              <p><label for="play_mode3" class="radio-inline"><input type="radio" id="play_mode3" name="play_mode" value="3"{% if play_mode == 3 %} checked{% end %}>在poi中运行</label></p>
+            </div>
+          </div>
         </div>
+        {% if cdn_domains %}
+        <div class="col-lg-6">
+          <div class="radio">
+          <p><strong>CDN加速：</strong></p>
+          <div class="login_select">
+            {% for item in cdn_domains %}
+            <p><label for="{{ item }}" class="radio-inline"><input type="radio" id="{{ item }}" name="cdn" value="{{ item }}"{% if cdn == item %} checked{% end %}>{{ cdn_domains[item]['name'] }}</label></p>
+            {% end %}
+            <p><label for="default" class="radio-inline"><input type="radio" id="default" name="cdn" value="default"{% if cdn == "default" %} checked{% end %}>不使用CDN加速 (较慢)</label></p>
+          </div>
+        </div>
+        </div>
+        {% end %}
       </div>
       <div class="form-actions"><input type="submit" name="submit" value="登录游戏" class="btn btn-primary" id="submit-id-submit"></div>
     </form>

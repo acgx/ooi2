@@ -7,7 +7,7 @@ from auth.kancolle import KanColleAuth
 from auth.exceptions import OoiAuthError
 from session.session import OoiSession
 from utils.convert import to_int, to_str
-from config import kcs_domain, kcs_https_domain
+from config import cdn_domains, default_kcs_domain
 
 Session = OoiSession()
 
@@ -15,13 +15,18 @@ Session = OoiSession()
 class MainHandler(RequestHandler):
     def get(self):
         play_mode = to_int(self.get_secure_cookie('play_mode'), 1)
-        self.render('login_form.html', error=False, message=None, play_mode=play_mode)
+        default_cdn = list(cdn_domains.keys())[0] if cdn_domains else 'default'
+        cdn = to_str(self.get_secure_cookie('cdn'), default_cdn)
+        self.render('login_form.html', error=False, message=None, play_mode=play_mode, cdn=cdn, cdn_domains=cdn_domains)
 
     @coroutine
     def post(self):
         login_id = self.get_argument('login_id')
         password = self.get_argument('password')
         play_mode = to_int(self.get_argument('play_mode'), 1)
+        cdn = self.get_argument('cdn')
+        if cdn not in cdn_domains:
+            cdn = 'default'
         if login_id and password:
             auth = KanColleAuth(login_id, password)
             try:
@@ -30,6 +35,7 @@ class MainHandler(RequestHandler):
                 self.set_secure_cookie('token', token, expires_days=None)
                 self.set_secure_cookie('starttime', starttime, expires_days=None)
                 self.set_secure_cookie('play_mode', str(play_mode), expires=time.time()+86400)
+                self.set_secure_cookie('cdn', cdn, expires_days=None)
                 Session.create_user(owner, token, starttime, world_ip)
                 if play_mode == 2:
                     self.redirect('/iframe')
@@ -51,13 +57,15 @@ class NormalGameHandler(RequestHandler):
         owner = to_str(self.get_secure_cookie('owner'))
         token = to_str(self.get_secure_cookie('token'))
         starttime = to_str(self.get_secure_cookie('starttime'))
-        if owner and token and starttime:
+        cdn = to_str(self.get_secure_cookie('cdn'))
+        if owner and token and starttime and cdn:
             user = Session.get_user(owner, token, starttime)
             if user:
                 scheme = self.request.headers.get('X-Scheme', 'http')
-                host = kcs_domain if kcs_domain else self.request.headers.get('Host')
-                if scheme == 'https' and kcs_https_domain:
-                    host = kcs_https_domain
+                if cdn == 'default' or scheme == 'https':
+                    host = default_kcs_domain if default_kcs_domain else self.request.headers.get('Host')
+                else:
+                    host = cdn_domains[cdn]['domain']
                 self.render('normal_game.html', scheme=scheme, host=host, token=token, starttime=starttime, owner=owner)
                 return
         self.clear_all_cookies()
@@ -69,7 +77,8 @@ class IFrameGameHandler(RequestHandler):
         owner = to_str(self.get_secure_cookie('owner'))
         token = to_str(self.get_secure_cookie('token'))
         starttime = to_str(self.get_secure_cookie('starttime'))
-        if owner and token and starttime:
+        cdn = to_str(self.get_secure_cookie('cdn'))
+        if owner and token and starttime and cdn:
             user = Session.get_user(owner, token, starttime)
             if user:
                 self.render('iframe_game.html')
@@ -83,13 +92,15 @@ class IFrameFlashHandler(RequestHandler):
         owner = to_str(self.get_secure_cookie('owner'))
         token = to_str(self.get_secure_cookie('token'))
         starttime = to_str(self.get_secure_cookie('starttime'))
-        if owner and token and starttime:
+        cdn = to_str(self.get_secure_cookie('cdn'))
+        if owner and token and starttime and cdn:
             user = Session.get_user(owner, token, starttime)
             if user:
                 scheme = self.request.headers.get('X-Scheme', 'http')
-                host = kcs_domain if kcs_domain else self.request.headers.get('Host')
-                if scheme == 'https' and kcs_https_domain:
-                    host = kcs_https_domain
+                if cdn == 'default' or scheme == 'https':
+                    host = default_kcs_domain if default_kcs_domain else self.request.headers.get('Host')
+                else:
+                    host = cdn_domains[cdn]['domain']
                 self.render('flash.html', scheme=scheme, host=host, token=token, starttime=starttime, owner=owner)
                 return
         self.clear_all_cookies()
@@ -101,13 +112,15 @@ class PoiGameHandler(RequestHandler):
         owner = to_str(self.get_secure_cookie('owner'))
         token = to_str(self.get_secure_cookie('token'))
         starttime = to_str(self.get_secure_cookie('starttime'))
-        if owner and token and starttime:
+        cdn = to_str(self.get_secure_cookie('cdn'))
+        if owner and token and starttime and cdn:
             user = Session.get_user(owner, token, starttime)
             if user:
                 scheme = self.request.headers.get('X-Scheme', 'http')
-                host = kcs_domain if kcs_domain else self.request.headers.get('Host')
-                if scheme == 'https' and kcs_https_domain:
-                    host = kcs_https_domain
+                if cdn == 'default' or scheme == 'https':
+                    host = default_kcs_domain if default_kcs_domain else self.request.headers.get('Host')
+                else:
+                    host = cdn_domains[cdn]['domain']
                 self.render('poi_game.html', scheme=scheme, host=host, token=token, starttime=starttime, owner=owner)
                 return
         self.clear_all_cookies()

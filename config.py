@@ -19,9 +19,12 @@ proxy_port = int(os.environ.get('OOI_PROXY_PORT')) if os.environ.get('OOI_PROXY_
 # Customized settings
 customize_dir = os.path.join(base_dir, 'customize')
 
-# kcs
-kcs_domain = os.environ.get('OOI_KCS_DOMAIN', None)
-kcs_https_domain = os.environ.get('OOI_KCS_HTTPS_DOMAIN', None)
-
 # result of api_start2
 api_start2_path = '/srv/_kcs/api_start2.json'
+
+# CDN
+try:
+    from customize.cdn import cdn_domains, default_kcs_domain
+except ImportError:
+    cdn_domains = {}
+    default_kcs_domain = None
