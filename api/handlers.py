@@ -1,8 +1,10 @@
+import os
+
 from tornado.gen import coroutine
 from tornado.web import RequestHandler
 from utils.httpclient import AsyncHTTPClient
 from utils.convert import to_str
-from config import proxy_host, proxy_port
+from config import proxy_host, proxy_port, api_start2_path
 
 
 class ApiHandler(RequestHandler):
@@ -10,23 +12,37 @@ class ApiHandler(RequestHandler):
     def post(self, action):
         world_ip = to_str(self.get_secure_cookie('world_ip'))
         if world_ip:
-            referer = self.request.headers.get('Referer')
-            referer = referer.replace(self.request.headers.get('Host'), world_ip)
-            referer = referer.replace('https', 'http')
-            referer = referer.replace('&world_ip=' + world_ip, '')
-            url = 'http://' + world_ip + self.request.uri
-            headers = {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko',
-                'Origin': 'http://' + world_ip + '/',
-                'Referer': referer,
-                'X-Requested-With': 'ShockwaveFlash/18.0.0.232'
-            }
-            http_client = AsyncHTTPClient()
-            response = yield http_client.fetch(url, method='POST', headers=headers, body=self.request.body,
-                                               connect_timeout=60, request_timeout=120,
-                                               proxy_host=proxy_host, proxy_port=proxy_port)
-            self.set_header('Content-Type', response.headers['Content-Type'])
-            self.write(response.body)
+            if action == 'api_start2' and os.path.exists(api_start2_path):
+                fp = open(api_start2_path, 'rb')
+                body = fp.read()
+                fp.close()
+                self.set_header('Content-Type', 'text/plain')
+                self.write(body)
+            else:
+                referer = self.request.headers.get('Referer')
+                referer = referer.replace(self.request.headers.get('Host'), world_ip)
+                referer = referer.replace('https', 'http')
+                referer = referer.replace('&world_ip=' + world_ip, '')
+                url = 'http://' + world_ip + self.request.uri
+                headers = {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64; Trident/7.0; rv:11.0) like Gecko',
+                    'Origin': 'http://' + world_ip + '/',
+                    'Referer': referer,
+                    'X-Requested-With': 'ShockwaveFlash/18.0.0.232'
+                }
+                http_client = AsyncHTTPClient()
+                response = yield http_client.fetch(url, method='POST', headers=headers, body=self.request.body,
+                                                   connect_timeout=60, request_timeout=120,
+                                                   proxy_host=proxy_host, proxy_port=proxy_port)
+                self.set_header('Content-Type', response.headers['Content-Type'])
+                self.write(response.body)
+                if action == 'api_start2':
+                    try:
+                        fp = open(api_start2_path, 'wb')
+                        fp.write(response.body)
+                        fp.close()
+                    except (IOError, PermissionError):
+                        pass
         else:
             self.send_error(403)
 
