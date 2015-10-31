@@ -33,7 +33,6 @@
             {% for item in cdn_domains %}
             <p><label for="{{ item }}" class="radio-inline"><input type="radio" id="{{ item }}" name="cdn" value="{{ item }}"{% if cdn == item %} checked{% end %}>{{ cdn_domains[item]['name'] }}</label></p>
             {% end %}
-            <p><label for="default" class="radio-inline"><input type="radio" id="default" name="cdn" value="default"{% if cdn == "default" %} checked{% end %}>不使用CDN加速 (较慢)</label></p>
           </div>
         </div>
         </div>

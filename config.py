@@ -24,7 +24,6 @@ api_start2_path = '/srv/_kcs/api_start2.json'
 
 # CDN
 try:
-    from customize.cdn import cdn_domains, default_kcs_domain
+    from customize.cdn import cdn_domains
 except ImportError:
-    cdn_domains = {}
-    default_kcs_domain = None
+    cdn_domains = None

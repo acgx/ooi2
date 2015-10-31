@@ -1,4 +1,5 @@
 import time
+from collections import OrderedDict
 
 from tornado.gen import coroutine
 from tornado.web import RequestHandler
@@ -7,17 +8,31 @@ from auth.kancolle import KanColleAuth
 from auth.exceptions import OoiAuthError
 from session.session import OoiSession
 from utils.convert import to_int, to_str
-from config import cdn_domains, default_kcs_domain
+from config import cdn_domains
 
 Session = OoiSession()
+default_kcs_domain = None
+
+
+def init_cdns(request):
+    global cdn_domains
+    if cdn_domains is None:
+        cdn_domains = OrderedDict()
+        cdn_domains['default'] = {'name': '不使用CDN加速 (较慢)', 'domain': request.headers.get('Host'), 'http': False}
 
 
 class MainHandler(RequestHandler):
     def get(self):
+        init_cdns(self.request)
         play_mode = to_int(self.get_secure_cookie('play_mode'), 1)
         default_cdn = list(cdn_domains.keys())[0] if cdn_domains else 'default'
         cdn = to_str(self.get_secure_cookie('cdn'), default_cdn)
-        self.render('login_form.html', error=False, message=None, play_mode=play_mode, cdn=cdn, cdn_domains=cdn_domains)
+        scheme = self.request.headers.get('X-Scheme', 'http')
+        if scheme != 'https':
+            self.redirect('https://%s%s' % (cdn_domains['default']['domain'], self.request.uri))
+        else:
+            self.render('login_form.html', error=False, message=None, play_mode=play_mode,
+                        cdn=cdn, cdn_domains=cdn_domains)
 
     @coroutine
     def post(self):
@@ -54,18 +69,20 @@ class MainHandler(RequestHandler):
 
 class NormalGameHandler(RequestHandler):
     def get(self):
+        init_cdns(self.request)
         owner = to_str(self.get_secure_cookie('owner'))
         token = to_str(self.get_secure_cookie('token'))
         starttime = to_str(self.get_secure_cookie('starttime'))
         cdn = to_str(self.get_secure_cookie('cdn'))
+        scheme = self.request.headers.get('X-Scheme', 'http')
         if owner and token and starttime and cdn:
+            if cdn_domains[cdn]['http'] and scheme != 'http':
+                self.redirect('http://%s/kancolle' % self.request.headers.get('Host'))
+            else:
+                pass
             user = Session.get_user(owner, token, starttime)
             if user:
-                scheme = self.request.headers.get('X-Scheme', 'http')
-                if cdn == 'default' or scheme == 'https':
-                    host = default_kcs_domain if default_kcs_domain else self.request.headers.get('Host')
-                else:
-                    host = cdn_domains[cdn]['domain']
+                host = cdn_domains[cdn]['domain']
                 self.render('normal_game.html', scheme=scheme, host=host, token=token, starttime=starttime, owner=owner)
                 return
         self.clear_all_cookies()
@@ -74,6 +91,8 @@ class NormalGameHandler(RequestHandler):
 
 class IFrameGameHandler(RequestHandler):
     def get(self):
+        if self.request.headers.get('X-Scheme') == 'https':
+            self.redirect('http://%s/iframe' % self.request.headers.get('Host'))
         owner = to_str(self.get_secure_cookie('owner'))
         token = to_str(self.get_secure_cookie('token'))
         starttime = to_str(self.get_secure_cookie('starttime'))
@@ -109,6 +128,8 @@ class IFrameFlashHandler(RequestHandler):
 
 class PoiGameHandler(RequestHandler):
     def get(self):
+        if self.request.headers.get('X-Scheme') == 'https':
+            self.redirect('http://%s/poi' % self.request.headers.get('Host'))
         owner = to_str(self.get_secure_cookie('owner'))
         token = to_str(self.get_secure_cookie('token'))
         starttime = to_str(self.get_secure_cookie('starttime'))
@@ -130,7 +151,7 @@ class PoiGameHandler(RequestHandler):
 class ReloginHandler(RequestHandler):
     def get(self):
         self.clear_all_cookies()
-        self.redirect('/')
+        self.redirect('https://%s/' % self.request.headers.get('Host'))
 
 
 class MaintainHandler(RequestHandler):
