@@ -18,8 +18,11 @@ class ApiHandler(RequestHandler):
         world_ip = to_str(self.get_secure_cookie('world_ip'))
         if world_ip:
             if action == 'api_start2' and os.path.exists(api_start2_path):
+                fp = open(api_start2_path, 'rb')
+                body = fp.read()
+                fp.close()
                 self.set_header('Content-Type', 'text/plain')
-                self.set_header('X-Accel-Redirect', '/_kcs/api_start2.json')
+                self.write(body)
             else:
                 referer = self.request.headers.get('Referer')
                 referer = referer.replace(self.request.headers.get('Host'), world_ip)
@@ -47,6 +50,19 @@ class ApiHandler(RequestHandler):
                         if user:
                             Session.update_user(owner, svdata['api_data']['api_member_id'],
                                                 svdata['api_data']['api_nickname'])
+                        else:
+                            pass
+                    else:
+                        pass
+                elif action == 'api_start2':
+                    try:
+                        fp = open(api_start2_path, 'wb')
+                        fp.write(response.body)
+                        fp.close()
+                    except (IOError, PermissionError):
+                        pass
+                else:
+                    pass
         else:
             self.send_error(403)
 
