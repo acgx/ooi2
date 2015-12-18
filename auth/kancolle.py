@@ -92,7 +92,7 @@ class KanColleAuth:
             else:
                 raise OoiAuthError('DMM用户session获取失败')
         elif req.code == 200:
-            raise OoiAuthError('DMM用户认证失败，用户名或密码错误')
+            raise OoiAuthError('DMM用户认证失败，用户名或密码错误' if native_str(req.body).find(dmm.AJAX_TOKEN_URL) > 0 else 'DMM强制要求用户修改密码')
         else:
             raise OoiAuthError('连接DMM认证服务器失败')
 
